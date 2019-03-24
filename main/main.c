@@ -43,20 +43,20 @@ void app_main()
 	esp_err_t ret = ESP_OK;
 
 	ret = i2c_sensor_apds9960_init(&apds9960, &i2c_bus);
-	if (ret != ESP_OK)
-    		printf("\nErro ao inicializar dispositivo I2C \n");
-	ret = iot_apds9960_color_init(apds9960);
-	if (ret != ESP_OK)
-    		printf("\nErro ao inicializar sensor \n");
+    if (ret != ESP_OK)
+    	printf("\nErro ao inicializar dispositivo I2C \n");
+    ret = iot_apds9960_color_init(apds9960);
+    if (ret != ESP_OK)
+    	printf("\nErro ao inicializar sensor \n");
     
-	xTaskCreate(apds9960_task,
+    xTaskCreate(apds9960_task,
     				"apds9960_task",
     				1024*2, 
     				NULL, 
     				5, 
     				&xTaskHandlerAPDS);
 
-	xTaskCreate(blink_task, 
+    xTaskCreate(blink_task, 
     				"blink_task", 
     				configMINIMAL_STACK_SIZE, 
     				NULL, 
