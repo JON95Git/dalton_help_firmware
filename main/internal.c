@@ -17,44 +17,45 @@ esp_err_t i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t
 	_ASSERT(i2c_bus != NULL, ESP_FAIL);
 
 	i2c_port_t i2c_master_port = APDS9960_I2C_MASTER_NUM;
-    i2c_config_t conf;
-    conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = APDS9960_I2C_MASTER_SDA_IO;
-    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = APDS9960_I2C_MASTER_SCL_IO;
-    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.master.clk_speed = APDS9960_I2C_MASTER_FREQ_HZ;
+	i2c_config_t conf;
+	conf.mode = I2C_MODE_MASTER;
+	conf.sda_io_num = APDS9960_I2C_MASTER_SDA_IO;
+	conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+	conf.scl_io_num = APDS9960_I2C_MASTER_SCL_IO;
+	conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+	conf.master.clk_speed = APDS9960_I2C_MASTER_FREQ_HZ;
 
-    i2c_param_config(i2c_master_port, &conf);
+	i2c_param_config(i2c_master_port, &conf);
 
-    *i2c_bus = iot_i2c_bus_create(i2c_master_port, &conf);
-    if (i2c_bus == NULL){
-    	printf("\nErro ao criar dispositivo I2C \n");
-    }
+	*i2c_bus = iot_i2c_bus_create(i2c_master_port, &conf);
+	if (i2c_bus == NULL){
+		printf("\nErro ao criar dispositivo I2C \n");
+	}
 
-    *apds9960 = iot_apds9960_create(*i2c_bus, APDS9960_I2C_ADDRESS);
-    if (apds9960 == NULL){
-    	printf("\nErro ao criar objeto APDS9960 \n");
-    }else
-    	printf("\nObjeto APDS9960: %x \n", (unsigned int)*apds9960);
+	*apds9960 = iot_apds9960_create(*i2c_bus, APDS9960_I2C_ADDRESS);
+	if (apds9960 == NULL){
+		printf("\nErro ao criar objeto APDS9960 \n");
+	}else
+		printf("\nObjeto APDS9960: %x \n", (unsigned int)*apds9960);
 __end:
-    return ret;
+	return ret;
 }
 
 esp_err_t apds9960_test_func(apds9960_handle_t *apds9960)
 {
+
 	esp_err_t ret = ESP_OK;
 
 	_ASSERT(apds9960 != NULL, ESP_FAIL);
 
-    uint16_t *r = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
-    uint16_t *g = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
-    uint16_t *b = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
-    uint16_t *c = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
+	uint16_t *r = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
+	uint16_t *g = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
+	uint16_t *b = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
+	uint16_t *c = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
 
-    rgb_st *rgb1 = (rgb_st*)pvPortMalloc(sizeof(rgb_st));
-    hsv_st *hsv1 = (hsv_st*)pvPortMalloc(sizeof(hsv_st));
-    colour_st *color_st = (colour_st*)pvPortMalloc(sizeof(colour_st));
+	rgb_st *rgb1 = (rgb_st*)pvPortMalloc(sizeof(rgb_st));
+	hsv_st *hsv1 = (hsv_st*)pvPortMalloc(sizeof(hsv_st));
+	colour_st *color_st = (colour_st*)pvPortMalloc(sizeof(colour_st));
 
     while (1)
      {
@@ -76,15 +77,14 @@ esp_err_t apds9960_test_func(apds9960_handle_t *apds9960)
 		  vTaskDelay(1000 / portTICK_RATE_MS);
 
     }
-    iot_apds9960_delete(*apds9960, true);
-    vPortFree(r);
-    vPortFree(g);
-    vPortFree(b);
-    vPortFree(c);
-    vPortFree(color_st);
-
+	iot_apds9960_delete(*apds9960, true);
+	vPortFree(r);
+	vPortFree(g);
+	vPortFree(b);
+	vPortFree(c);
+	vPortFree(color_st);
 __end:
-    return ret;
+  	 return ret;
 
 }
 
@@ -98,7 +98,7 @@ esp_err_t test_hsv_color_range(hsv_st *hsv, colour_st *color){
 		color->hex_code = Red;
 		color->name = (uint8_t*)"Red";
 	}
-	if (hsv->h >= 21.0 && hsv->h <= 50.0){
+	else if (hsv->h >= 21.0 && hsv->h <= 50.0){
 		color->hex_code = Orange;
 		color->name = (uint8_t*)"Orange";
 	}
