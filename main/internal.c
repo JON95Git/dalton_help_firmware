@@ -41,7 +41,7 @@ __end:
     return ret;
 }
 
-esp_err_t apds9960_test_func(apds9960_handle_t *apds9960)
+esp_err_t apds9960_test_func(apds9960_handle_t *apds9960, colour_st *color_to_diplay_st)
 {
 	esp_err_t ret = ESP_OK;
 
@@ -72,6 +72,8 @@ esp_err_t apds9960_test_func(apds9960_handle_t *apds9960)
 
 		  ret = test_hsv_color_range(hsv1, color_st);
 		  printf("Color detected: %s\n\n", color_st->name);
+
+		  *color_to_diplay_st = *color_st;
 
 		  vTaskDelay(1000 / portTICK_RATE_MS);
 
@@ -143,8 +145,54 @@ __end:
 	return ret;
 }
 
+esp_err_t lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info){
+
+	esp_err_t ret = ESP_OK;
+
+	_ASSERT(lcd_info != NULL, ESP_FAIL);
+	_ASSERT(smbus_info != NULL, ESP_FAIL);
+
+	ret = smbus_init(smbus_info, I2C_NUM_0, address);
+	_ASSERT(ret == ESP_OK, ESP_FAIL);
+    if (ret != ESP_OK)
+    	printf("\nErro ao inicializar smbus\n");
+
+	ret = smbus_set_timeout(smbus_info, 1000 / portTICK_RATE_MS);
+	_ASSERT(ret == ESP_OK, ESP_FAIL);
+    if (ret != ESP_OK)
+    	printf("\nErro ao configurar timeout\n");
+
+	ret = i2c_lcd1602_init(lcd_info, smbus_info, true);
+	_ASSERT(ret == ESP_OK, ESP_FAIL);
+    if (ret != ESP_OK)
+    	printf("\nErro ao inicializar display \n");
+
+__end:
+	return ret;
+}
 
 
+/*
+esp_err_t i2c_master_init(void)
+{
+	esp_err_t ret = ESP_OK;
+
+    int i2c_master_port = I2C_NUM_0;
+    i2c_config_t conf;
+    conf.mode = I2C_MODE_MASTER;
+    conf.sda_io_num = 21;
+    conf.sda_pullup_en = GPIO_PULLUP_DISABLE;  // GY-2561 provides 10kΩ pullups
+    conf.scl_io_num = 22;
+    conf.scl_pullup_en = GPIO_PULLUP_DISABLE;  // GY-2561 provides 10kΩ pullups
+    conf.master.clk_speed = 100000;
+    i2c_param_config(i2c_master_port, &conf);
+    i2c_driver_install(i2c_master_port, conf.mode,
+                       I2C_MASTER_RX_BUF_LEN,
+                       I2C_MASTER_TX_BUF_LEN, 0);
+
+    return ret;
+}
+*/
 
 
 

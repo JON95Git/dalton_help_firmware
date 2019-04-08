@@ -20,6 +20,8 @@
 #include "driver/gpio.h"
 #include "colours.h"
 #include "rgb_to_hsv.h"
+#include "i2c-lcd1602.h"
+#include "smbus.h"
 
 
 #define CONFIG_BLINK_GPIO 2
@@ -31,7 +33,7 @@
 #define APDS9960_I2C_MASTER_TX_BUF_DISABLE   0
 #define APDS9960_I2C_MASTER_RX_BUF_DISABLE   0
 #define APDS9960_I2C_MASTER_FREQ_HZ          100000
-
+#define CONFIG_LCD1602_I2C_ADDRESS 0x3c
 
 #define _ASSERT(expr, error) \
 	do { \
@@ -42,8 +44,10 @@
 	} while (0)
 
 
-esp_err_t apds9960_test_func(apds9960_handle_t *apds9960);
+esp_err_t apds9960_test_func(apds9960_handle_t *apds9960, colour_st *color_to_diplay_st);
 esp_err_t i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus);
 esp_err_t test_hsv_color_range(hsv_st *hsv, colour_st *color);
+esp_err_t lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info);
+//esp_err_t i2c_master_init(void);
 
 #endif /* INTERNAL_H_ */
