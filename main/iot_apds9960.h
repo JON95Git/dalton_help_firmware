@@ -22,6 +22,7 @@ extern "C"
 #include "driver/i2c.h"
 #include "iot_i2c_bus.h"
 #include "esp_log.h"
+#include "esp_err.h"
 #include "math.h"
 
 #define APDS9960_I2C_ADDRESS    (0x39)

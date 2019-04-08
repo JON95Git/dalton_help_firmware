@@ -14,7 +14,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.cross.base.75428848" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.cross.base.75428848" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.cross.base.75428848.486393994" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.base.1295710992" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.base">
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.1609900452" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix"/>
@@ -22,6 +22,18 @@
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1083226698" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
 							<builder id="cdt.managedbuild.builder.gnu.cross.2116774176" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1140838843" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option id="gnu.c.compiler.option.include.paths.632880484" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/driver/include/driver"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/esp32/include"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/freertos/include/freertos"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/freertos/include"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/esp32/test"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/esp32/include/esp32"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/driver"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/driver/include"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/log/include"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.40450599" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1846578184" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -49,7 +61,11 @@
 		<project id="dalton-help-firmware.null.1324491247" name="dalton-help-firmware"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/dalton-help-firmware"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cross.base.75428848;cdt.managedbuild.toolchain.gnu.cross.base.75428848.486393994;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1846578184;cdt.managedbuild.tool.gnu.cpp.compiler.input.1721947287">
@@ -59,5 +75,17 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="flash" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments/>
+				<buildTarget>flash</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
 </cproject>
