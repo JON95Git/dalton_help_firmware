@@ -23,6 +23,9 @@
 #include "i2c-lcd1602.h"
 #include "smbus.h"
 
+#define GPIO_INPUT_IO_1     5
+#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_1)
+#define ESP_INTR_FLAG_DEFAULT 0
 
 #define CONFIG_BLINK_GPIO 2
 #define BLINK_GPIO CONFIG_BLINK_GPIO
@@ -48,6 +51,7 @@ esp_err_t apds9960_test_func(apds9960_handle_t *apds9960, colour_st *color_to_di
 esp_err_t i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus);
 esp_err_t test_hsv_color_range(hsv_st *hsv, colour_st *color);
 esp_err_t lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info);
+esp_err_t gpio_button_config(void (*gpio_isr_handler)(void*));
 //esp_err_t i2c_master_init(void);
 
 #endif /* INTERNAL_H_ */

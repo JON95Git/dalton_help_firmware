@@ -9,6 +9,8 @@
 #include "colours.h"
 #include "esp_system.h"
 
+
+
 esp_err_t i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus)
 {
 	esp_err_t ret = ESP_OK;
@@ -169,6 +171,45 @@ esp_err_t lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_in
 
 __end:
 	return ret;
+}
+
+esp_err_t gpio_button_config(void (*gpio_isr_handler)(void*)){
+
+	esp_err_t ret = ESP_OK;
+
+	gpio_config_t io_conf;
+
+	//interrupt of rising edge
+	io_conf.intr_type = GPIO_PIN_INTR_POSEDGE;
+
+	//bit mask of the pins, use GPIO4/5 here
+	io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
+
+	//set as input mode
+	io_conf.mode = GPIO_MODE_INPUT;
+
+	//enable pull-up mode
+	io_conf.pull_up_en = 0;
+
+	gpio_config(&io_conf);
+
+	//change gpio intrrupt type for one pin
+	gpio_set_intr_type(GPIO_INPUT_IO_1, GPIO_PIN_INTR_POSEDGE);
+
+	//install gpio isr service
+	gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
+
+	//hook isr handler for specific gpio pin
+	gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
+
+	//remove isr handler for gpio number.
+	gpio_isr_handler_remove(GPIO_INPUT_IO_1);
+	//hook isr handler for specific gpio pin again
+	gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
+
+//__end:
+	return ret;
+
 }
 
 
