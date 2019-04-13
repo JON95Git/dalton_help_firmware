@@ -20,13 +20,19 @@ smbus_info_t *smbus_info = NULL;
 i2c_address_t address = CONFIG_LCD1602_I2C_ADDRESS;
 colour_st *color_to_diplay_st = NULL;
 
-void apds9960_task(void *pvParameter)
+void dalton_rgb_task(void *pvParameter)
 {
-    while(1) {
-    	apds9960_test_func(&apds9960, color_to_diplay_st);
-    	vTaskDelay(1000 / portTICK_RATE_MS);
-    }
-    vTaskDelete(NULL);
+	while(1) {
+		if (pdTRUE == xTaskNotifyWait(0x00,      	//Don't clear any notification bits on entry.
+									0x00, 		// Reset the notification value to 0 on exit.
+									NULL, 			// Notified value pass out in ulNotifiedValue.
+									portMAX_DELAY ))// Block indefinitely.
+		{
+			_dalton_apds9960_test_func(&apds9960, color_to_diplay_st);
+			vTaskDelay(1000 / portTICK_RATE_MS);
+		}
+	}
+	vTaskDelete(NULL);
 }
 
 void blink_task(void *pvParameter)
@@ -42,45 +48,37 @@ void blink_task(void *pvParameter)
     }
 }
 
-void lcd1602_task(void *pvParameter)
+void dalton_lcd_task(void *pvParameter)
 {
-
-    //i2c_lcd1602_set_cursor(lcd_info, true);
     i2c_lcd1602_move_cursor(lcd_info, 2,0);
-	i2c_lcd1602_write_string(lcd_info, "Dalton Help");
+	i2c_lcd1602_write_string(lcd_info, "DALTON HELP");
 	vTaskDelay(3000 / portTICK_RATE_MS);
 	i2c_lcd1602_clear(lcd_info);
-	i2c_lcd1602_move_cursor(lcd_info, 2,0);
-	i2c_lcd1602_write_string(lcd_info, "Press button ");
-	i2c_lcd1602_move_cursor(lcd_info, 3,1);
-	i2c_lcd1602_write_string(lcd_info, "to init");
-	vTaskDelay(3000 / portTICK_RATE_MS);
+	i2c_lcd1602_move_cursor(lcd_info, 1,0);
+	i2c_lcd1602_write_string(lcd_info, "Press. o botao");
+	i2c_lcd1602_move_cursor(lcd_info, 1,1);
+	i2c_lcd1602_write_string(lcd_info, "para ler a cor");
 
-	for(;;){
+	while(1){
 
-		/* Block indefinitely (without a timeout, so no need to check the function's
-        return value) to wait for a notification.
-
-        Bits in this RTOS task's notification value are set by the notifying
-        tasks and interrupts to indicate which events have occurred. */
-
-		if (pdTRUE == xTaskNotifyWait( 0x00,      /* Don't clear any notification bits on entry. */
-				ULONG_MAX, /* Reset the notification value to 0 on exit. */
-				0x00, /* Notified value pass out in ulNotifiedValue. */
-				portMAX_DELAY ))  /* Block indefinitely. */
+		if (pdTRUE == xTaskNotifyWait(0x00,      	//Don't clear any notification bits on entry.
+									ULONG_MAX, 		// Reset the notification value to 0 on exit.
+									0x00, 			// Notified value pass out in ulNotifiedValue.
+									portMAX_DELAY ))// Block indefinitely.
 		{
 			i2c_lcd1602_clear(lcd_info);
 			i2c_lcd1602_move_cursor(lcd_info, 2,0);
-			i2c_lcd1602_write_string(lcd_info, "Color: ");
+			i2c_lcd1602_write_string(lcd_info, "Cor: ");
 			i2c_lcd1602_write_string(lcd_info,  (const char *)color_to_diplay_st->name);
-			vTaskDelay(3000 / portTICK_RATE_MS);
+			vTaskDelay(2000 / portTICK_RATE_MS);
+			i2c_lcd1602_clear(lcd_info);
+			i2c_lcd1602_move_cursor(lcd_info, 1,0);
+			i2c_lcd1602_write_string(lcd_info, "Press. o botao");
+			i2c_lcd1602_move_cursor(lcd_info, 1,1);
+			i2c_lcd1602_write_string(lcd_info, "para ler a cor");
        }
 
-		i2c_lcd1602_clear(lcd_info);
-		i2c_lcd1602_move_cursor(lcd_info, 2,0);
-		i2c_lcd1602_write_string(lcd_info, "Press button ");
-		i2c_lcd1602_move_cursor(lcd_info, 3,1);
-		i2c_lcd1602_write_string(lcd_info, "again pls");
+
     }
     vTaskDelete(NULL);
 
@@ -88,11 +86,12 @@ void lcd1602_task(void *pvParameter)
 void IRAM_ATTR gpio_isr_handler(void* arg)
 {
     xTaskNotify(xTaskHandlerLCD,0x00,eNoAction);
+    xTaskNotify(xTaskHandlerAPDS,0x00,eNoAction);
 }
 void gpio_task(void *pvParameter)
 {
 
-    for(;;) {
+	while(1) {
 
 
         }
@@ -107,7 +106,7 @@ void app_main()
 	smbus_info = smbus_malloc();
 	color_to_diplay_st = (colour_st*)pvPortMalloc(sizeof(colour_st));
 
-	ret = i2c_sensor_apds9960_init(&apds9960, &i2c_bus);
+	ret = _dalton_i2c_sensor_apds9960_init(&apds9960, &i2c_bus);
 	if (ret != ESP_OK)
 		printf("\nErro ao inicializar dispositivo I2C \n");
 
@@ -115,20 +114,20 @@ void app_main()
 	if (ret != ESP_OK)
 		printf("\nErro ao inicializar sensor \n");
 
-	ret = lcd_init(lcd_info, address, smbus_info);
+	ret = _dalton_lcd_init(lcd_info, address, smbus_info);
 	if (ret != ESP_OK){
 		printf("\nErro ao inicializar LCD \n");
 		printf("\nret = %i \n",ret);
 	}
 
-	ret = gpio_button_config(gpio_isr_handler);
+	ret = _dalton_gpio_button_config(gpio_isr_handler);
 	if (ret != ESP_OK){
 		printf("\nErro ao inicializar gpio \n");
 	}
 
 
-	xTaskCreate(apds9960_task,
-			"apds9960_task",
+	xTaskCreate(dalton_rgb_task,
+			"dalton_rgb_task",
 			1024*2,
 			NULL,
 			5,
@@ -141,19 +140,19 @@ void app_main()
 			5,
 			&xTaskHandlerLed);
 
-	xTaskCreate(lcd1602_task,
-			"lcd1602_task",
-			4096,
+	xTaskCreate(dalton_lcd_task,
+			"dalton_lcd_task",
+			1024*2,
 			NULL,
 			5,
 			&xTaskHandlerLCD);
 
-	xTaskCreate(gpio_task,
+	/*xTaskCreate(gpio_task,
 			"gpio_task_example",
 			2048,
 			NULL,
 			10,
-			&xTaskHandlerGpio);
+			&xTaskHandlerGpio);*/
 
 	while (1){
 

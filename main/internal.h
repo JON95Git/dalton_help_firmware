@@ -47,11 +47,11 @@
 	} while (0)
 
 
-esp_err_t apds9960_test_func(apds9960_handle_t *apds9960, colour_st *color_to_diplay_st);
-esp_err_t i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus);
-esp_err_t test_hsv_color_range(hsv_st *hsv, colour_st *color);
-esp_err_t lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info);
-esp_err_t gpio_button_config(void (*gpio_isr_handler)(void*));
+esp_err_t _dalton_apds9960_test_func(apds9960_handle_t *apds9960, colour_st *color_to_diplay_st);
+esp_err_t _dalton_i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus);
+esp_err_t _dalton_test_hsv_color_range(hsv_st *hsv, colour_st *color);
+esp_err_t _dalton_lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info);
+esp_err_t _dalton_gpio_button_config(void (*gpio_isr_handler)(void*));
 //esp_err_t i2c_master_init(void);
 
 #endif /* INTERNAL_H_ */
