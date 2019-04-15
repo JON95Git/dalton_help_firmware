@@ -22,11 +22,8 @@ colour_st *color_to_diplay_st = NULL;
 
 void dalton_rgb_task(void *pvParameter)
 {
-	while(1) {
-		if (pdTRUE == xTaskNotifyWait(0x00,      	//Don't clear any notification bits on entry.
-									0x00, 		// Reset the notification value to 0 on exit.
-									NULL, 			// Notified value pass out in ulNotifiedValue.
-									portMAX_DELAY ))// Block indefinitely.
+	while(1){
+		if (pdTRUE == xTaskNotifyWait(0x00, 0x00, NULL, portMAX_DELAY))
 		{
 			_dalton_apds9960_test_func(&apds9960, color_to_diplay_st);
 			vTaskDelay(1000 / portTICK_RATE_MS);
@@ -35,7 +32,7 @@ void dalton_rgb_task(void *pvParameter)
 	vTaskDelete(NULL);
 }
 
-void blink_task(void *pvParameter)
+void dalton_blink_task(void *pvParameter)
 {
     gpio_pad_select_gpio(BLINK_GPIO);
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
@@ -60,11 +57,7 @@ void dalton_lcd_task(void *pvParameter)
 	i2c_lcd1602_write_string(lcd_info, "para ler a cor");
 
 	while(1){
-
-		if (pdTRUE == xTaskNotifyWait(0x00,      	//Don't clear any notification bits on entry.
-									ULONG_MAX, 		// Reset the notification value to 0 on exit.
-									0x00, 			// Notified value pass out in ulNotifiedValue.
-									portMAX_DELAY ))// Block indefinitely.
+		if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY))
 		{
 			i2c_lcd1602_clear(lcd_info);
 			i2c_lcd1602_move_cursor(lcd_info, 2,0);
@@ -78,16 +71,17 @@ void dalton_lcd_task(void *pvParameter)
 			i2c_lcd1602_write_string(lcd_info, "para ler a cor");
        }
 
-
     }
     vTaskDelete(NULL);
 
 }
+
 void IRAM_ATTR gpio_isr_handler(void* arg)
 {
     xTaskNotify(xTaskHandlerLCD,0x00,eNoAction);
     xTaskNotify(xTaskHandlerAPDS,0x00,eNoAction);
 }
+
 void gpio_task(void *pvParameter)
 {
 
@@ -106,59 +100,46 @@ void app_main()
 	smbus_info = smbus_malloc();
 	color_to_diplay_st = (colour_st*)pvPortMalloc(sizeof(colour_st));
 
+
 	ret = _dalton_i2c_sensor_apds9960_init(&apds9960, &i2c_bus);
-	if (ret != ESP_OK)
-		printf("\nErro ao inicializar dispositivo I2C \n");
+	if (ret != ESP_OK){
+		ESP_LOGE("APDS9960", "Erro ao inicializar dispositivo I2C \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
+	}
 
 	ret = iot_apds9960_color_init(apds9960);
-	if (ret != ESP_OK)
-		printf("\nErro ao inicializar sensor \n");
+	if (ret != ESP_OK){
+		ESP_LOGE("APDS9960", "Erro ao inicializar sensor \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
+	}
 
 	ret = _dalton_lcd_init(lcd_info, address, smbus_info);
 	if (ret != ESP_OK){
-		printf("\nErro ao inicializar LCD \n");
-		printf("\nret = %i \n",ret);
+		ESP_LOGE("LCD", "Erro ao inicializar LCD \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
 	}
 
 	ret = _dalton_gpio_button_config(gpio_isr_handler);
 	if (ret != ESP_OK){
-		printf("\nErro ao inicializar gpio \n");
+		ESP_LOGE("GPIO", "Erro ao inicializar gpio \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
 	}
 
+	xTaskCreate(dalton_rgb_task, "dalton_rgb_task", 1024*2, NULL, 5, &xTaskHandlerAPDS);
+	xTaskCreate(dalton_blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, &xTaskHandlerLed);
+	xTaskCreate(dalton_lcd_task, "dalton_lcd_task", 1024*2, NULL, 5, &xTaskHandlerLCD);
 
-	xTaskCreate(dalton_rgb_task,
-			"dalton_rgb_task",
-			1024*2,
-			NULL,
-			5,
-			&xTaskHandlerAPDS);
-
-	xTaskCreate(blink_task,
-			"blink_task",
-			configMINIMAL_STACK_SIZE,
-			NULL,
-			5,
-			&xTaskHandlerLed);
-
-	xTaskCreate(dalton_lcd_task,
-			"dalton_lcd_task",
-			1024*2,
-			NULL,
-			5,
-			&xTaskHandlerLCD);
-
-	/*xTaskCreate(gpio_task,
-			"gpio_task_example",
-			2048,
-			NULL,
-			10,
-			&xTaskHandlerGpio);*/
-
-	while (1){
+	while(1){
 
 		//Nunca chega aqui...
 	}
 
+__end:
+	ESP_LOGE("DALTON ERROR", "Fechando aplicacao... \n");
+	vTaskDelete(xTaskHandlerLed);
+	vTaskDelete(xTaskHandlerAPDS);
+	vTaskDelete(xTaskHandlerLCD);
+	vTaskDelete(xTaskHandlerGpio);
 
 }
 

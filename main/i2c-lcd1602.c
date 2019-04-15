@@ -275,7 +275,7 @@ void i2c_lcd1602_free(i2c_lcd1602_info_t ** i2c_lcd1602_info)
 
 esp_err_t i2c_lcd1602_init(i2c_lcd1602_info_t * i2c_lcd1602_info, smbus_info_t * smbus_info, bool backlight)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (i2c_lcd1602_info != NULL)
     {
         i2c_lcd1602_info->smbus_info = smbus_info;

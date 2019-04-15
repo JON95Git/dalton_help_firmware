@@ -30,14 +30,14 @@ esp_err_t _dalton_i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_
 
 	*i2c_bus = iot_i2c_bus_create(i2c_master_port, &conf);
 	if (i2c_bus == NULL){
-		printf("\nErro ao criar dispositivo I2C \n");
+		ESP_LOGE("APDS9960","Erro ao criar dispositivo I2C \n");
 	}
 
 	*apds9960 = iot_apds9960_create(*i2c_bus, APDS9960_I2C_ADDRESS);
 	if (apds9960 == NULL){
-		printf("\nErro ao criar objeto APDS9960 \n");
-	}else
-		printf("\nObjeto APDS9960: %x \n", (unsigned int)*apds9960);
+		ESP_LOGE("APDS9960","Erro ao criar objeto APDS9960 \n");
+	}
+
 __end:
 	return ret;
 }
@@ -189,19 +189,22 @@ esp_err_t _dalton_lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, 
 	_ASSERT(smbus_info != NULL, ESP_FAIL);
 
 	ret = smbus_init(smbus_info, I2C_NUM_0, address);
-	_ASSERT(ret == ESP_OK, ESP_FAIL);
-    if (ret != ESP_OK)
-    	printf("\nErro ao inicializar smbus\n");
+	if (ret != ESP_OK){
+		ESP_LOGE("LCD", "Erro ao inicializar smbus\n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
+	}
 
 	ret = smbus_set_timeout(smbus_info, 1000 / portTICK_RATE_MS);
-	_ASSERT(ret == ESP_OK, ESP_FAIL);
-    if (ret != ESP_OK)
-    	printf("\nErro ao configurar timeout\n");
+	if (ret != ESP_OK){
+		ESP_LOGE("LCD", "Erro ao configurar timeout\n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
+	}
 
 	ret = i2c_lcd1602_init(lcd_info, smbus_info, true);
-	_ASSERT(ret == ESP_OK, ESP_FAIL);
-    if (ret != ESP_OK)
-    	printf("\nErro ao inicializar display \n");
+	if (ret != ESP_OK){
+		ESP_LOGE("LCD", "Erro ao inicializar display \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
+	}
 
 __end:
 	return ret;
