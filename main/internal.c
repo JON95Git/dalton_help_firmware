@@ -30,12 +30,14 @@ esp_err_t _dalton_i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_
 
 	*i2c_bus = iot_i2c_bus_create(i2c_master_port, &conf);
 	if (i2c_bus == NULL){
-		ESP_LOGE("APDS9960","Erro ao criar dispositivo I2C \n");
+		ESP_LOGE("APDS9960","Erro ao criar barramento I2C \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
 	}
 
 	*apds9960 = iot_apds9960_create(*i2c_bus, APDS9960_I2C_ADDRESS);
 	if (apds9960 == NULL){
 		ESP_LOGE("APDS9960","Erro ao criar objeto APDS9960 \n");
+		_ASSERT(ret == ESP_OK, ESP_FAIL);
 	}
 
 __end:
@@ -54,8 +56,8 @@ esp_err_t _dalton_apds9960_test_func(apds9960_handle_t *apds9960, colour_st *col
 	uint16_t *b = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
 	uint16_t *c = (uint16_t*)pvPortMalloc(sizeof(uint16_t));
 
-	rgb_st *rgb1 = (rgb_st*)pvPortMalloc(sizeof(rgb_st));
-	hsv_st *hsv1 = (hsv_st*)pvPortMalloc(sizeof(hsv_st));
+	rgb_st *rgb = (rgb_st*)pvPortMalloc(sizeof(rgb_st));
+	hsv_st *hsv = (hsv_st*)pvPortMalloc(sizeof(hsv_st));
 	colour_st *color_st = (colour_st*)pvPortMalloc(sizeof(colour_st));
 
 	colour_rgb_t hex_code = Default;
@@ -63,33 +65,29 @@ esp_err_t _dalton_apds9960_test_func(apds9960_handle_t *apds9960, colour_st *col
 
     while (1)
      {
-
 		  iot_apds9960_get_color_data(*apds9960, r, g, b, c);
+		  rgb->r = *r/256;
+		  rgb->g = *g/256;
+		  rgb->b = *b/256;
+		  printf("RGB: r = %f,  g = %f,  b = %f  c = %i\n", rgb->r, rgb->g, rgb->b, *c/256);
 
-		  rgb1->r = *r/256;
-		  rgb1->g = *g/256;
-		  rgb1->b = *b/256;
+		  *hsv = rgb2hsv(*rgb);
+		  printf("HSV1: h = %.2f , s = %.2f, v = %.2f \n", hsv->h, hsv->s, hsv->v);
 
-		  printf("RGB: r = %f,  g = %f,  b = %f  c = %i\n", rgb1->r, rgb1->g, rgb1->b, *c/256);
-
-		  *hsv1 = rgb2hsv(*rgb1);
-		  printf("HSV1: h = %.2f , s = %.2f, v = %.2f \n", hsv1->h, hsv1->s, hsv1->v);
-
-		  ret = _dalton_test_hsv_color_range(hsv1, color_st);
+		  ret = _dalton_test_hsv_color_range(hsv, color_st);
 		  //printf("Cor detectada: %s\n\n", color_st->name);
 
 		  *color_to_diplay_st = *color_st;
-
 		  hex_code = color_st->hex_code;
 
 		  for (int i = 0; i <= MAX_READ_HSV; i++){
 
 		  	iot_apds9960_get_color_data(*apds9960, r, g, b, c);
-		  	rgb1->r = *r/256;
-		  	rgb1->g = *g/256;
-		  	rgb1->b = *b/256;
-		  	*hsv1 = rgb2hsv(*rgb1);
-		  	ret = _dalton_test_hsv_color_range(hsv1, color_st);
+		  	rgb->r = *r/256;
+		  	rgb->g = *g/256;
+		  	rgb->b = *b/256;
+		  	*hsv = rgb2hsv(*rgb);
+		  	ret = _dalton_test_hsv_color_range(hsv, color_st);
 
 		  	if (color_st->hex_code == hex_code) counter_range++;
 		  	hex_code = color_st->hex_code;
@@ -105,7 +103,6 @@ esp_err_t _dalton_apds9960_test_func(apds9960_handle_t *apds9960, colour_st *col
 		  }
 
 		  counter_range = 0;
-
 		  vTaskDelay(1000 / portTICK_RATE_MS);
 
     }

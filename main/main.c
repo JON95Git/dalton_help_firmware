@@ -43,6 +43,7 @@ void dalton_blink_task(void *pvParameter)
         gpio_set_level(BLINK_GPIO, 1);
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
+	vTaskDelete(NULL);
 }
 
 void dalton_lcd_task(void *pvParameter)
@@ -73,7 +74,6 @@ void dalton_lcd_task(void *pvParameter)
 
     }
     vTaskDelete(NULL);
-
 }
 
 void IRAM_ATTR gpio_isr_handler(void* arg)
@@ -89,7 +89,7 @@ void gpio_task(void *pvParameter)
 
 
         }
-
+	vTaskDelete(NULL);
 }
 
 void app_main()
