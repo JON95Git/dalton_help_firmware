@@ -328,7 +328,7 @@ esp_err_t i2c_lcd1602_init(i2c_lcd1602_info_t * i2c_lcd1602_info, smbus_info_t *
 
 esp_err_t i2c_lcd1602_clear(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         _write_command(i2c_lcd1602_info, COMMAND_CLEAR_DISPLAY);
@@ -339,7 +339,7 @@ esp_err_t i2c_lcd1602_clear(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 
 esp_err_t i2c_lcd1602_home(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         _write_command(i2c_lcd1602_info, COMMAND_RETURN_HOME);
@@ -350,7 +350,7 @@ esp_err_t i2c_lcd1602_home(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 
 esp_err_t i2c_lcd1602_move_cursor(const i2c_lcd1602_info_t * i2c_lcd1602_info, uint8_t col, uint8_t row)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         const int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
@@ -369,7 +369,7 @@ esp_err_t i2c_lcd1602_move_cursor(const i2c_lcd1602_info_t * i2c_lcd1602_info, u
 
 esp_err_t i2c_lcd1602_set_backlight(i2c_lcd1602_info_t * i2c_lcd1602_info, bool enable)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->backlight_flag = _set_or_clear(i2c_lcd1602_info->backlight_flag, enable, FLAG_BACKLIGHT_ON);
@@ -380,7 +380,7 @@ esp_err_t i2c_lcd1602_set_backlight(i2c_lcd1602_info_t * i2c_lcd1602_info, bool 
 
 esp_err_t i2c_lcd1602_set_display(i2c_lcd1602_info_t * i2c_lcd1602_info, bool enable)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->display_control_flags = _set_or_clear(i2c_lcd1602_info->display_control_flags, enable, FLAG_DISPLAY_CONTROL_DISPLAY_ON);
@@ -391,7 +391,7 @@ esp_err_t i2c_lcd1602_set_display(i2c_lcd1602_info_t * i2c_lcd1602_info, bool en
 
 esp_err_t i2c_lcd1602_set_cursor(i2c_lcd1602_info_t * i2c_lcd1602_info, bool enable)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->display_control_flags = _set_or_clear(i2c_lcd1602_info->display_control_flags, enable, FLAG_DISPLAY_CONTROL_CURSOR_ON);
@@ -402,7 +402,7 @@ esp_err_t i2c_lcd1602_set_cursor(i2c_lcd1602_info_t * i2c_lcd1602_info, bool ena
 
 esp_err_t i2c_lcd1602_set_blink(i2c_lcd1602_info_t * i2c_lcd1602_info, bool enable)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->display_control_flags = _set_or_clear(i2c_lcd1602_info->display_control_flags, enable, FLAG_DISPLAY_CONTROL_BLINK_ON);
@@ -413,7 +413,7 @@ esp_err_t i2c_lcd1602_set_blink(i2c_lcd1602_info_t * i2c_lcd1602_info, bool enab
 
 esp_err_t i2c_lcd1602_set_left_to_right(i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->entry_mode_flags |= FLAG_ENTRY_MODE_SET_ENTRY_INCREMENT;
@@ -424,7 +424,7 @@ esp_err_t i2c_lcd1602_set_left_to_right(i2c_lcd1602_info_t * i2c_lcd1602_info)
 
 esp_err_t i2c_lcd1602_set_right_to_left(i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->entry_mode_flags &= ~FLAG_ENTRY_MODE_SET_ENTRY_INCREMENT;
@@ -435,7 +435,7 @@ esp_err_t i2c_lcd1602_set_right_to_left(i2c_lcd1602_info_t * i2c_lcd1602_info)
 
 esp_err_t i2c_lcd1602_set_auto_scroll(i2c_lcd1602_info_t * i2c_lcd1602_info, bool enable)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         i2c_lcd1602_info->entry_mode_flags = _set_or_clear(i2c_lcd1602_info->entry_mode_flags, enable, FLAG_ENTRY_MODE_SET_ENTRY_SHIFT_ON);
@@ -446,7 +446,7 @@ esp_err_t i2c_lcd1602_set_auto_scroll(i2c_lcd1602_info_t * i2c_lcd1602_info, boo
 
 esp_err_t i2c_lcd1602_scroll_display_left(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         // RAM is not changed
@@ -457,7 +457,7 @@ esp_err_t i2c_lcd1602_scroll_display_left(const i2c_lcd1602_info_t * i2c_lcd1602
 
 esp_err_t i2c_lcd1602_scroll_display_right(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         // RAM is not changed
@@ -468,7 +468,7 @@ esp_err_t i2c_lcd1602_scroll_display_right(const i2c_lcd1602_info_t * i2c_lcd160
 
 esp_err_t i2c_lcd1602_move_cursor_left(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         // RAM is not changed. Shift direction is inverted.
@@ -479,7 +479,7 @@ esp_err_t i2c_lcd1602_move_cursor_left(const i2c_lcd1602_info_t * i2c_lcd1602_in
 
 esp_err_t i2c_lcd1602_move_cursor_right(const i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         // RAM is not changed. Shift direction is inverted.
@@ -490,7 +490,7 @@ esp_err_t i2c_lcd1602_move_cursor_right(const i2c_lcd1602_info_t * i2c_lcd1602_i
 
 esp_err_t i2c_lcd1602_define_char(const i2c_lcd1602_info_t * i2c_lcd1602_info, i2c_lcd1602_custom_index_t index, uint8_t pixelmap[])
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         index &= 0x07;  // only the first 8 indexes can be used for custom characters
@@ -505,7 +505,7 @@ esp_err_t i2c_lcd1602_define_char(const i2c_lcd1602_info_t * i2c_lcd1602_info, i
 
 esp_err_t i2c_lcd1602_write_char(const i2c_lcd1602_info_t * i2c_lcd1602_info, uint8_t chr)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         _write_data(i2c_lcd1602_info, chr);
@@ -515,7 +515,7 @@ esp_err_t i2c_lcd1602_write_char(const i2c_lcd1602_info_t * i2c_lcd1602_info, ui
 
 esp_err_t i2c_lcd1602_write_string(const i2c_lcd1602_info_t * i2c_lcd1602_info, const char * string)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
         for (int i = 0; string[i]; ++i)
@@ -531,7 +531,7 @@ esp_err_t i2c_lcd1602_write_string(const i2c_lcd1602_info_t * i2c_lcd1602_info, 
 #if 0
 esp_err_t i2c_lcd1602_XXX(i2c_lcd1602_info_t * i2c_lcd1602_info)
 {
-    esp_err_t err = ESP_FAIL;
+    esp_err_t err = ESP_OK;
     if (_is_init(i2c_lcd1602_info))
     {
     }
