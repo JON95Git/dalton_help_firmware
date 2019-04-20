@@ -1,12 +1,12 @@
 /*
- * internal.h
+ * dalton_internal.h
  *
  *  Created on: 23 de mar de 2019
  *      Author: jonathan
  */
 
-#ifndef INTERNAL_H_
-#define INTERNAL_H_
+#ifndef DALTON_INTERNAL_H_
+#define DALTON_INTERNAL_H_
 #include <stdio.h>
 #include "unity.h"
 #include "esp_log.h"
@@ -47,10 +47,28 @@
 		} \
 	} while (0)
 
-esp_err_t _dalton_apds9960_test_func(apds9960_handle_t *apds9960, colour_st *color_to_diplay_st);
-esp_err_t _dalton_i2c_sensor_apds9960_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus);
-esp_err_t _dalton_test_hsv_color_range(hsv_st *hsv, colour_st *color);
-esp_err_t _dalton_lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info);
-esp_err_t _dalton_gpio_button_config(void (*gpio_isr_handler)(void*));
 
-#endif /* INTERNAL_H_ */
+extern TaskHandle_t xTaskHandlerLed;
+extern TaskHandle_t xTaskHandlerAPDS;
+extern TaskHandle_t xTaskHandlerLCD ;
+
+void dalton_color_task(void *pvParameter);
+void dalton_blink_task(void *pvParameter);
+void dalton_lcd_task(void *pvParameter);
+
+esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info,
+		i2c_bus_handle_t i2c_bus, smbus_info_t *smbus_info, i2c_address_t address );
+
+esp_err_t _dalton_color_sensor_init(apds9960_handle_t *apds9960, i2c_bus_handle_t *i2c_bus);
+esp_err_t _dalton_color_get_color(apds9960_handle_t *apds9960, hsv_st *hsv);
+esp_err_t _dalton_color_test_range(hsv_st *hsv, colour_st *color);
+
+esp_err_t _dalton_button_config(void (*gpio_isr_handler)(void*));
+
+esp_err_t _dalton_lcd_init(i2c_lcd1602_info_t *lcd_info, i2c_address_t address, smbus_info_t *smbus_info);
+esp_err_t _dalton_lcd_presentation(const i2c_lcd1602_info_t *lcd_info);
+esp_err_t _dalton_lcd_press_button(const i2c_lcd1602_info_t *lcd_info);
+esp_err_t _dalton_lcd_show_color(const i2c_lcd1602_info_t *lcd_info, colour_st *color_to_diplay_st);
+esp_err_t _dalton_lcd_clear(const i2c_lcd1602_info_t *lcd_info);
+
+#endif /* DALTON_INTERNAL_H_ */
