@@ -33,6 +33,10 @@
 									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/driver"/>
 									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/driver/include"/>
 									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/log/include"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/lwip/lwip/src/include/lwip"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/lwip/lwip/src/include"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/lwip/test_afl_host"/>
+									<listOptionValue builtIn="false" value="/home/jonathan/esp/esp-idf/components/nvs_flash/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.40450599" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
