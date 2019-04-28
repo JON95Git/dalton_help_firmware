@@ -8,13 +8,14 @@
 #ifndef DALTON_INTERNAL_H_
 #define DALTON_INTERNAL_H_
 #include <stdio.h>
-#include "unity.h"
+#include <string.h>
 #include "esp_log.h"
 #include "driver/i2c.h"
 #include "iot_i2c_bus.h"
 #include "iot_apds9960.h"
 #include "esp_system.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
 #include "freertos/task.h"
 #include "sdkconfig.h"
 #include "driver/gpio.h"
@@ -22,6 +23,14 @@
 #include "rgb_to_hsv.h"
 #include "i2c-lcd1602.h"
 #include "smbus.h"
+#include "nvs_flash.h"
+#include "lwip/err.h"
+#include "lwip/sockets.h"
+#include "lwip/sys.h"
+#include "lwip/netdb.h"
+#include "lwip/dns.h"
+#include "esp_wifi.h"
+#include "esp_event_loop.h"
 
 #define MAX_READ_HSV 200
 #define GPIO_INPUT_IO_1     5
@@ -39,6 +48,36 @@
 #define APDS9960_I2C_MASTER_FREQ_HZ          100000
 #define CONFIG_LCD1602_I2C_ADDRESS 0x3c
 
+
+/* The examples use simple WiFi configuration that you can set via
+   'make menuconfig'.
+
+   If you'd rather not, just change the below entries to strings with
+   the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
+*/
+
+#define CONFIG_WIFI_SSID "RedmiJon"
+#define CONFIG_WIFI_PASSWORD "00000000"
+
+#define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
+#define EXAMPLE_WIFI_PASS CONFIG_WIFI_PASSWORD
+
+/* FreeRTOS event group to signal when we are connected & ready to make a request */
+EventGroupHandle_t wifi_event_group;
+
+/* The event group allows multiple bits for each event,
+   but we only care about one event - are we connected
+   to the AP with an IP? */
+extern const int CONNECTED_BIT_HTTP;
+
+/* Constants that aren't configurable in menuconfig */
+#define WEB_SERVER "example.com"
+#define WEB_PORT 80
+#define WEB_URL "http://example.com/"
+
+extern const char *TAG_HTTP;
+extern const char *REQUEST_HTTP;
+
 #define _ASSERT(expr, error) \
 	do { \
 		if (!(expr)) { \
@@ -47,14 +86,15 @@
 		} \
 	} while (0)
 
-
 extern TaskHandle_t xTaskHandlerLed;
 extern TaskHandle_t xTaskHandlerAPDS;
-extern TaskHandle_t xTaskHandlerLCD ;
+extern TaskHandle_t xTaskHandlerLCD;
+extern TaskHandle_t xTaskHandlerWifi;
 
 void dalton_color_task(void *pvParameter);
 void dalton_blink_task(void *pvParameter);
 void dalton_lcd_task(void *pvParameter);
+void dalton_http_get_task(void *pvParameters);
 
 esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info,
 		i2c_bus_handle_t i2c_bus, smbus_info_t *smbus_info, i2c_address_t address );
@@ -70,5 +110,7 @@ esp_err_t _dalton_lcd_presentation(const i2c_lcd1602_info_t *lcd_info);
 esp_err_t _dalton_lcd_press_button(const i2c_lcd1602_info_t *lcd_info);
 esp_err_t _dalton_lcd_show_color(const i2c_lcd1602_info_t *lcd_info, colour_st *color_to_diplay_st);
 esp_err_t _dalton_lcd_clear(const i2c_lcd1602_info_t *lcd_info);
+
+void initialise_wifi(void);
 
 #endif /* DALTON_INTERNAL_H_ */

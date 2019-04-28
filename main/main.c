@@ -10,6 +10,7 @@
 TaskHandle_t xTaskHandlerLed = NULL;
 TaskHandle_t xTaskHandlerAPDS = NULL;
 TaskHandle_t xTaskHandlerLCD = NULL;
+TaskHandle_t xTaskHandlerWifi = NULL;
 
 void app_main()
 {
@@ -22,7 +23,9 @@ void app_main()
 
 	ret = dalton_init_hardware(&apds9960, lcd_info, &i2c_bus, smbus_info, address);
 	_ASSERT(ret == ESP_OK, ESP_FAIL);
-
+    ESP_ERROR_CHECK( nvs_flash_init() );
+    initialise_wifi();
+    xTaskCreate(dalton_http_get_task, "dalton_http_get_task", 4096, NULL, 5, &xTaskHandlerWifi);
 	xTaskCreate(dalton_color_task, "dalton_color_task", 1024*2, (void *)apds9960, 5, &xTaskHandlerAPDS);
 	xTaskCreate(dalton_blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, &xTaskHandlerLed);
 	xTaskCreate(dalton_lcd_task, "dalton_lcd_task", 1024*2, (void *)lcd_info, 5, &xTaskHandlerLCD);
