@@ -31,6 +31,7 @@
 #include "lwip/dns.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
+#include "esp_http_client.h"
 
 #define MAX_READ_HSV 200
 #define GPIO_INPUT_IO_1     5
@@ -48,35 +49,39 @@
 #define APDS9960_I2C_MASTER_FREQ_HZ          100000
 #define CONFIG_LCD1602_I2C_ADDRESS 0x3c
 
-
-/* The examples use simple WiFi configuration that you can set via
-   'make menuconfig'.
-
-   If you'd rather not, just change the below entries to strings with
-   the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
-*/
-
 #define CONFIG_WIFI_SSID "RedmiJon"
 #define CONFIG_WIFI_PASSWORD "00000000"
-
 #define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
 #define EXAMPLE_WIFI_PASS CONFIG_WIFI_PASSWORD
-
-/* FreeRTOS event group to signal when we are connected & ready to make a request */
+extern const char *TAG_WIFI;
+extern const int CONNECTED_BIT_WIFI;
 EventGroupHandle_t wifi_event_group;
 
-/* The event group allows multiple bits for each event,
-   but we only care about one event - are we connected
-   to the AP with an IP? */
-extern const int CONNECTED_BIT_HTTP;
-
+//---------Example HTTP GET by simple socket------------------------------------------------------------
 /* Constants that aren't configurable in menuconfig */
-#define WEB_SERVER "example.com"
+#define WEB_SERVER "google.com"
 #define WEB_PORT 80
-#define WEB_URL "http://example.com/"
-
+#define WEB_URL "http://google.com/"
 extern const char *TAG_HTTP;
 extern const char *REQUEST_HTTP;
+
+//---------Example HTTP CLIENT--------------------------------------------------------------------------
+#define MAX_HTTP_RECV_BUFFER 512
+extern const char *TAG_HTTP_CLIENT;
+
+/* Root cert for howsmyssl.com, taken from howsmyssl_com_root_cert.pem
+
+   The PEM file was extracted from the output of this command:
+   openssl s_client -showcerts -connect www.howsmyssl.com:443 </dev/null
+
+   The CA root cert is the last cert given in the chain of certs.
+
+   To embed it in the app binary, the PEM file is named
+   in the component.mk COMPONENT_EMBED_TXTFILES variable.
+*/
+extern const char howsmyssl_com_root_cert_pem_start[];
+extern const char howsmyssl_com_root_cert_pem_end[];
+
 
 #define _ASSERT(expr, error) \
 	do { \
@@ -90,11 +95,13 @@ extern TaskHandle_t xTaskHandlerLed;
 extern TaskHandle_t xTaskHandlerAPDS;
 extern TaskHandle_t xTaskHandlerLCD;
 extern TaskHandle_t xTaskHandlerWifi;
+extern TaskHandle_t xTaskHandlerHttp;
 
 void dalton_color_task(void *pvParameter);
 void dalton_blink_task(void *pvParameter);
 void dalton_lcd_task(void *pvParameter);
 void dalton_http_get_task(void *pvParameters);
+void dalton_http_test_task(void *pvParameters);
 
 esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info,
 		i2c_bus_handle_t i2c_bus, smbus_info_t *smbus_info, i2c_address_t address );
@@ -111,6 +118,22 @@ esp_err_t _dalton_lcd_press_button(const i2c_lcd1602_info_t *lcd_info);
 esp_err_t _dalton_lcd_show_color(const i2c_lcd1602_info_t *lcd_info, colour_st *color_to_diplay_st);
 esp_err_t _dalton_lcd_clear(const i2c_lcd1602_info_t *lcd_info);
 
-void initialise_wifi(void);
+esp_err_t _dalton_initialize_wifi(void);
+void app_wifi_wait_connected();
+
+void http_rest_with_url();
+void http_rest_with_hostname_path();
+void http_auth_basic();
+void http_auth_basic_redirect();
+void http_auth_digest();
+void https_with_url();
+void https_with_hostname_path();
+void http_relative_redirect();
+void http_absolute_redirect();
+void http_redirect_to_https();
+void http_download_chunk();
+void http_perform_as_stream_reader();
+void https_async();
+
 
 #endif /* DALTON_INTERNAL_H_ */

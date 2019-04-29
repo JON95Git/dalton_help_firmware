@@ -107,7 +107,7 @@ void dalton_http_get_task(void *pvParameters)
         /* Wait for the callback to set the CONNECTED_BIT in the
            event group.
         */
-        xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT_HTTP,
+        xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT_WIFI,
                             false, true, portMAX_DELAY);
         ESP_LOGI(TAG_HTTP, "Connected to AP");
 
@@ -183,3 +183,26 @@ void dalton_http_get_task(void *pvParameters)
         ESP_LOGI(TAG_HTTP, "Starting again!");
     }
 }
+
+void dalton_http_test_task(void *pvParameters)
+{
+    app_wifi_wait_connected();
+    ESP_LOGI(TAG_HTTP_CLIENT, "Connected to AP, begin http example");
+    http_rest_with_url();
+    http_rest_with_hostname_path();
+    http_auth_basic();
+    http_auth_basic_redirect();
+    http_auth_digest();
+    http_relative_redirect();
+    http_absolute_redirect();
+    https_with_url();
+    https_with_hostname_path();
+    http_redirect_to_https();
+    http_download_chunk();
+    http_perform_as_stream_reader();
+    https_async();
+
+    ESP_LOGI(TAG_HTTP_CLIENT, "Finish http example");
+    vTaskDelete(NULL);
+}
+
