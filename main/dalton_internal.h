@@ -94,13 +94,11 @@ extern const char howsmyssl_com_root_cert_pem_end[];
 extern TaskHandle_t xTaskHandlerLed;
 extern TaskHandle_t xTaskHandlerAPDS;
 extern TaskHandle_t xTaskHandlerLCD;
-extern TaskHandle_t xTaskHandlerWifi;
 extern TaskHandle_t xTaskHandlerHttp;
 
 void dalton_color_task(void *pvParameter);
 void dalton_blink_task(void *pvParameter);
 void dalton_lcd_task(void *pvParameter);
-void dalton_http_get_task(void *pvParameters);
 void dalton_http_test_task(void *pvParameters);
 
 esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info,
@@ -119,21 +117,9 @@ esp_err_t _dalton_lcd_show_color(const i2c_lcd1602_info_t *lcd_info, colour_st *
 esp_err_t _dalton_lcd_clear(const i2c_lcd1602_info_t *lcd_info);
 
 esp_err_t _dalton_initialize_wifi(void);
-void app_wifi_wait_connected();
+void _dalton_wifi_wait_connected(void);
 
-void http_rest_with_url();
-void http_rest_with_hostname_path();
-void http_auth_basic();
-void http_auth_basic_redirect();
-void http_auth_digest();
-void https_with_url();
-void https_with_hostname_path();
-void http_relative_redirect();
-void http_absolute_redirect();
-void http_redirect_to_https();
-void http_download_chunk();
-void http_perform_as_stream_reader();
-void https_async();
+void _dalton_http_post(colour_st *color_to_diplay_st);
 
 
 #endif /* DALTON_INTERNAL_H_ */
