@@ -53,7 +53,10 @@ typedef enum{
 	Default = -1,
 }colour_rgb_t;
 
+typedef char* color_id_t;
+
 typedef struct{
+	color_id_t id;
 	colour_rgb_t hex_code;
 	uint8_t *name;
 }colour_st;
