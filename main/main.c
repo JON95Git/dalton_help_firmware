@@ -10,7 +10,6 @@
 TaskHandle_t xTaskHandlerLed = NULL;
 TaskHandle_t xTaskHandlerAPDS = NULL;
 TaskHandle_t xTaskHandlerLCD = NULL;
-TaskHandle_t xTaskHandlerWifi = NULL;
 TaskHandle_t xTaskHandlerHttp = NULL;
 
 void app_main()
@@ -25,7 +24,6 @@ void app_main()
 	ret = dalton_init_hardware(&apds9960, lcd_info, &i2c_bus, smbus_info, address);
 	_ASSERT(ret == ESP_OK, ESP_FAIL);
 
-    //xTaskCreate(dalton_http_get_task, "dalton_http_get_task", 4096, NULL, 5, &xTaskHandlerWifi);
     xTaskCreate(dalton_http_test_task, "dalton_test_task", 8192, NULL, 5, &xTaskHandlerHttp );
 	xTaskCreate(dalton_color_task, "dalton_color_task", 1024*2, (void *)apds9960, 5, &xTaskHandlerAPDS);
 	xTaskCreate(dalton_blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, &xTaskHandlerLed);
@@ -39,6 +37,7 @@ __end:
 		vTaskDelete(xTaskHandlerLed);
 		vTaskDelete(xTaskHandlerAPDS);
 		vTaskDelete(xTaskHandlerLCD);
+		vTaskDelete(xTaskHandlerHttp);
 	}else {
 		ESP_LOGI("DALTON OK", "Iniciando aplicacao... \n");
 		ESP_LOGI("DALTON OK", "Pronto!\n");
