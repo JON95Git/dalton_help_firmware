@@ -14,10 +14,24 @@ const int CONNECTED_BIT_WIFI = BIT0;
 
 const char *TAG_HTTP_CLIENT = "HTTP_CLIENT";
 
+void gpio_init(void)
+{
+    gpio_config_t cfg;
+    cfg.pin_bit_mask = BIT23;
+    cfg.intr_type = 0;
+    cfg.mode = GPIO_MODE_OUTPUT;
+    cfg.pull_down_en = 0;
+    cfg.pull_up_en = 0;
+
+    gpio_config(&cfg);
+    gpio_set_level(23, 0);
+}
+
 void IRAM_ATTR gpio_isr_handler(void* arg)
 {
     xTaskNotify(xTaskHandlerLCD,0x00,eNoAction);
     xTaskNotify(xTaskHandlerAPDS,0x00,eNoAction);
+    xTaskNotify(xTaskHandlerLed,0x00,eNoAction);
 }
 
 esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info, i2c_bus_handle_t i2c_bus, smbus_info_t *smbus_info, i2c_address_t address ){
@@ -47,6 +61,8 @@ esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *l
 		ESP_LOGE("WI-FI", "Erro ao inicializar Wi-fi \n");
 		_ASSERT(ret == ESP_OK, ESP_FAIL);
 	}
+
+	gpio_init();
 
 __end:
 	return ret;

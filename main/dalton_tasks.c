@@ -22,6 +22,12 @@ void dalton_blink_task(void *pvParameter)
         gpio_set_level(BLINK_GPIO, 1);
         vTaskDelay(100 / portTICK_PERIOD_MS);
 
+        if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY)){
+            gpio_set_level(23, 1);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            gpio_set_level(23, 0);
+        }
+
     }
 	vTaskDelete(NULL);
 }
