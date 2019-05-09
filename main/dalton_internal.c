@@ -206,7 +206,7 @@ esp_err_t _dalton_color_test_range(hsv_st *hsv, colour_st *color){
 			color->hex_code = Magenta;
 			color->name = (uint8_t*)"Rosa";
 		}
-		else if (hsv->h <= 14.0 || (hsv->h <= 360.0 && hsv->h <= 330.0)){
+		else if (hsv->h <= 14.0 || (hsv->h <= 360.0 && hsv->h >= 330.0)){
 			color->id = "4";
 			color->hex_code = Red;
 			color->name = (uint8_t*)"Vermelho";
