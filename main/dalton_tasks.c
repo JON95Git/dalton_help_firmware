@@ -24,7 +24,7 @@ void dalton_blink_task(void *pvParameter)
 
         if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY)){
             gpio_set_level(23, 1);
-            vTaskDelay(100 / portTICK_PERIOD_MS);
+            vTaskDelay(50 / portTICK_PERIOD_MS);
             gpio_set_level(23, 0);
         }
 
@@ -43,6 +43,7 @@ void dalton_lcd_task(void *pvParameter)
 	while(1){
 		if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY))
 		{
+			xTaskNotify(xTaskHandlerAPDS,0x00,eNoAction);
 			_dalton_lcd_clear(lcd_info);
 			_dalton_lcd_show_color(lcd_info, color_to_diplay_st);
 			vTaskDelay(2000 / portTICK_RATE_MS);
@@ -90,6 +91,7 @@ void dalton_color_task(void *pvParameter)
 				*color_to_diplay_st = color_st;
 				//Notifica a task de Http somente apos uma leitura concluida...
 				xTaskNotify(xTaskHandlerHttp,0x00,eNoAction);
+				xTaskNotify(xTaskHandlerLed,0x00,eNoAction);
 			}
 			counter_range = 0;
 			vTaskDelay(100 / portTICK_RATE_MS);

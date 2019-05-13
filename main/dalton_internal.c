@@ -30,8 +30,6 @@ void gpio_init(void)
 void IRAM_ATTR gpio_isr_handler(void* arg)
 {
     xTaskNotify(xTaskHandlerLCD,0x00,eNoAction);
-    xTaskNotify(xTaskHandlerAPDS,0x00,eNoAction);
-    xTaskNotify(xTaskHandlerLed,0x00,eNoAction);
 }
 
 esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info, i2c_bus_handle_t i2c_bus, smbus_info_t *smbus_info, i2c_address_t address ){
