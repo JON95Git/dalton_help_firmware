@@ -13,6 +13,8 @@ const char *TAG_WIFI = "WIFI";
 const int CONNECTED_BIT_WIFI = BIT0;
 
 const char *TAG_HTTP_CLIENT = "HTTP_CLIENT";
+volatile bool flagButton;
+
 
 void gpio_init(void)
 {
@@ -29,7 +31,11 @@ void gpio_init(void)
 
 void IRAM_ATTR gpio_isr_handler(void* arg)
 {
-    xTaskNotify(xTaskHandlerLCD,0x00,eNoAction);
+	if (flagButton == 0){
+		xTaskNotify(xTaskHandlerLCD,0x00,eNoAction);
+		flagButton = 1;
+	}
+
 }
 
 esp_err_t dalton_init_hardware(apds9960_handle_t apds9960, i2c_lcd1602_info_t *lcd_info, i2c_bus_handle_t i2c_bus, smbus_info_t *smbus_info, i2c_address_t address ){

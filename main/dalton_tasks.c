@@ -10,6 +10,7 @@
 #include "dalton_internal.h"
 
 colour_st *color_to_diplay_st = NULL;
+extern volatile bool flagButton;
 
 void dalton_blink_task(void *pvParameter)
 {
@@ -92,6 +93,7 @@ void dalton_color_task(void *pvParameter)
 				//Notifica a task de Http somente apos uma leitura concluida...
 				xTaskNotify(xTaskHandlerHttp,0x00,eNoAction);
 				xTaskNotify(xTaskHandlerLed,0x00,eNoAction);
+				flagButton = 0;
 			}
 			counter_range = 0;
 			vTaskDelay(100 / portTICK_RATE_MS);
