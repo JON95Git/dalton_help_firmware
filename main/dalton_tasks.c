@@ -10,6 +10,7 @@
 #include "dalton_internal.h"
 
 colour_st *color_to_diplay_st = NULL;
+extern volatile bool flagButton;
 
 void dalton_blink_task(void *pvParameter)
 {
@@ -21,6 +22,12 @@ void dalton_blink_task(void *pvParameter)
         vTaskDelay(100 / portTICK_PERIOD_MS);
         gpio_set_level(BLINK_GPIO, 1);
         vTaskDelay(100 / portTICK_PERIOD_MS);
+
+        if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY)){
+            gpio_set_level(23, 1);
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            gpio_set_level(23, 0);
+        }
 
     }
 	vTaskDelete(NULL);
@@ -37,6 +44,7 @@ void dalton_lcd_task(void *pvParameter)
 	while(1){
 		if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY))
 		{
+			xTaskNotify(xTaskHandlerAPDS,0x00,eNoAction);
 			_dalton_lcd_clear(lcd_info);
 			_dalton_lcd_show_color(lcd_info, color_to_diplay_st);
 			vTaskDelay(2000 / portTICK_RATE_MS);
@@ -77,11 +85,15 @@ void dalton_color_task(void *pvParameter)
 				hex_code = color_st.hex_code;
 			}
 
-			if (counter_range >= 85){
+			if (counter_range >= 185){
 				printf("HSV: h = %.2f , s = %.2f, v = %.2f \n", hsv.h, hsv.s, hsv.v);
 				printf("counter: %i\n", counter_range);
 				printf("Cor detectada: %s\n\n", color_st.name);
 				*color_to_diplay_st = color_st;
+				//Notifica a task de Http somente apos uma leitura concluida...
+				xTaskNotify(xTaskHandlerHttp,0x00,eNoAction);
+				xTaskNotify(xTaskHandlerLed,0x00,eNoAction);
+				flagButton = 0;
 			}
 			counter_range = 0;
 			vTaskDelay(100 / portTICK_RATE_MS);
@@ -91,3 +103,22 @@ void dalton_color_task(void *pvParameter)
 	vPortFree(apds9960);
 	vTaskDelete(NULL);
 }
+
+void dalton_http_test_task(void *pvParameters)
+{
+	_dalton_wifi_wait_connected();
+	ESP_LOGI(TAG_HTTP_CLIENT, "Connected to Acess Point...");
+
+	while (1){
+		if (pdTRUE == xTaskNotifyWait(0x00, ULONG_MAX, 0x00, portMAX_DELAY))
+		{
+			_dalton_wifi_wait_connected();
+			ESP_LOGI(TAG_HTTP_CLIENT, "Connected to Acess Point...");
+			ESP_LOGI(TAG_HTTP_CLIENT, "HTTP POST id color = %s", color_to_diplay_st->id);
+			_dalton_http_post(color_to_diplay_st);
+		}
+	}
+	ESP_LOGI(TAG_HTTP_CLIENT, "Finish http");
+	vTaskDelete(NULL);
+}
+
